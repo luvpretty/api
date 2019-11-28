@@ -7,7 +7,11 @@ export default (ctx, next) => {
         msg: 'Protected resource, use Authorization header to get access\n'
       }
     } else {
-      throw err;
-    }
-  });
+      ctx.status = err.status || 500
+      ctx.body = {
+        code: 500,
+        msg: err.message
+      }
+   }
+ })
 }
