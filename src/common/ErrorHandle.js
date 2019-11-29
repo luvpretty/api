@@ -1,3 +1,4 @@
+// 处理全局错误
 export default (ctx, next) => {
   return next().catch((err) => {
     if (401 == err.status) {
