@@ -19,7 +19,7 @@ class LoginController {
           .add(30, 'minutes')
           .format('YYYY-MM-DD HH:mm:ss'),
         email: body.username,
-        user: 'Brian',
+        user: 'luvpretty',
       })
       ctx.body = {
         code: 200,
@@ -42,8 +42,9 @@ class LoginController {
     if (result) {
       // 验证用户账号密码是否正确
       let checkUserPasswd = false
-      let user = await User.findOne({ username: body.username })
-      if (user.password === body.password) {
+      let user = await User.findOne({ username: body.username})
+      console.log(user)
+      if (await bcrypt.compare(body.password, user.password)) {
         checkUserPasswd = true
       }
       // mongoDB查库
@@ -84,10 +85,10 @@ class LoginController {
     let check = true
     if (result) {
     // 查库，看username是否被注册
-    let user1 = await User.findOne({email: body.email})
+    let user1 = await User.findOne({username: body.username})
     // console.log(user1)
-    if (user1 !== null && typeof user1.email !== 'undefined') {
-      msg.email = ['此邮箱已经注册，可以通过邮箱找回密码']
+    if (user1 !== null && typeof user1.username !== 'undefined') {
+      msg.username = ['此邮箱已经注册，可以通过邮箱找回密码']
       check = false
     }
     // 查库，看nickname是否被注册
@@ -100,7 +101,7 @@ class LoginController {
     if (check) {
       body.password = await bcrypt.hash(body.password, 5)
       let user = new User({
-        email: body.email,
+        username: body.username,
         nickname: body.nickname,
         password: body.password,
         created: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -117,7 +118,7 @@ class LoginController {
     
     } else {
       // veevalidate显示的错误
-      msg.code = ['验证码已经失效，请重新获取']
+      msg.vercode = ['验证码已经失效，请重新获取']
     }
     ctx.body = {
       code: 500,
