@@ -1,4 +1,4 @@
-import koa from 'koa'
+import Koa from 'koa'
 import JWT from 'koa-jwt'
 import path from 'path'
 import helmet from 'koa-helmet'
@@ -12,9 +12,9 @@ import compress from 'koa-compress'
 import config from './config/index'
 import errorHandle from './common/ErrorHandle'
 
-const app = new koa()
+const app = new Koa()
 
-const isDevMode = process.env.NODE_ENV === 'production' ? false : true
+const isDevMode = process.env.NODE_ENV !== 'production'
 
 // 定义公共路径，不需要jwt鉴权
 const jwt = JWT({ secret: config.JWT_SECRET }).unless({ path: [/^\/public/, /\/login/] })

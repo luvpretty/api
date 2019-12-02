@@ -1,4 +1,4 @@
-import { getValue } from '../config/RedisConfig';
+import { getValue } from '../config/RedisConfig'
 
 const checkCode = async (key, value) => {
   const redisData = await getValue(key)

@@ -5,15 +5,13 @@ import jsonwebtoken from 'jsonwebtoken'
 import config from '../config'
 import { checkCode } from '../common/Utils'
 import User from '../model/User'
-
 class LoginController {
-  constructor() { }
-  async forget(ctx) {
+  async forget (ctx) {
     const { body } = ctx.request
     console.log(body)
     try {
       // body.username -> database -> email
-      let result = await send({
+      const result = await send({
         code: '1234',
         expire: moment()
           .add(30, 'minutes')
@@ -30,7 +28,6 @@ class LoginController {
       console.log(e)
     }
   }
-
   async login(ctx) {
     // 接收用户的数据
     // 返回token
@@ -73,7 +70,6 @@ class LoginController {
       }
     }
   }
-
   async reg(ctx) {
     // 接收客户端的数据
     const { body } = ctx.request
@@ -114,8 +110,7 @@ class LoginController {
         msg: '注册成功'
       }
       return
-    }
-    
+    }  
     } else {
       // veevalidate显示的错误
       msg.vercode = ['验证码已经失效，请重新获取']
@@ -124,9 +119,6 @@ class LoginController {
       code: 500,
       msg: msg
     }
-
   }
-
 }
-
 export default new LoginController()
