@@ -41,6 +41,18 @@ PostSchema.statics = {
         path: 'uid',
         select: 'nickname isVip pic'
       })
+  },
+  getTopWeek: function () {
+    // 倒序返回七天前评论最多的10条
+    return this.find({
+      created: {
+        $gte: moment().subtract(7, 'days')
+      }
+    }, {
+      answer: 1,
+      title: 1
+    }).sort({ answer: -1 })
+      .limit(10)
   }
 }
 
