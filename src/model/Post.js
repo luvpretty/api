@@ -39,7 +39,7 @@ PostSchema.statics = {
       // 联合查询
       .populate({
         path: 'uid',
-        select: 'nickname'
+        select: 'nickname isVip pic'
       })
   }
 }
