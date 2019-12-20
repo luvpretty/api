@@ -52,7 +52,7 @@ class LoginController {
         arr.map((item) => {
           delete userObj[item]
         })
-        const token = jsonwebtoken.sign({ _id: 'brian' }, config.JWT_SECRET, {
+        const token = jsonwebtoken.sign({ _id: userObj._id }, config.JWT_SECRET, {
           expiresIn: '1d'
         })
         ctx.body = {
