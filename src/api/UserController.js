@@ -8,7 +8,7 @@ class UserController {
   // 用户签到接口
   async userSign (ctx) {
     // 取用户的ID
-    const obj = getJWTPayload(ctx.header.authorization)
+    const obj = await getJWTPayload(ctx.header.authorization)
     // 查询用户上一次签到记录
     const record = await SignRecord.findByUid(obj._id)
     const user = await User.findByID(obj._id)
@@ -22,13 +22,12 @@ class UserController {
       // 如果当前时间的日期与用户上一次的签到日期相同，说明用户已经签到
       const created = moment(record.created).format('YYYY-MM-DD')
       const now = moment().format('YYYY-MM-DD')
-      console.log('created', created)
-      console.log('now', now)
       if (created === now) {
         ctx.body = {
           code: 500,
           favs: user.favs,
           count: user.count,
+          lastSign: record.created,
           msg: '用户已经签到'
         }
         return
@@ -87,8 +86,7 @@ class UserController {
         // 更新签到记录表
         newRecord = new SignRecord({
           uid: obj._id,
-          favs: fav,
-          lastSign: record.created
+          favs: fav
         })
         await newRecord.save()
       }
@@ -108,8 +106,7 @@ class UserController {
       // 保存用户的签到记录
       newRecord = new SignRecord({
         uid: obj._id,
-        favs: 5,
-        lastSign: moment().format('YYYY-MM-DD HH:mm:ss')
+        favs: 5
       })
       await newRecord.save()
       result = {
@@ -120,7 +117,8 @@ class UserController {
     ctx.body = {
       code: 200,
       msg: '请求成功',
-      ...result
+      ...result,
+      lastSign: newRecord.created
     }
   }
 }

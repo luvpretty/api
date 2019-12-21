@@ -56,7 +56,7 @@ class LoginController {
         const token = jsonwebtoken.sign({ _id: userObj._id }, config.JWT_SECRET, {
           expiresIn: '1d'
         })
-        // 加入isSign属性
+        // 登录时加入isSign属性
         const signRecord = await SignRecord.findByUid(userObj._id)
         if (signRecord !== null) {
           if (moment(signRecord.created).format('YYYY-MM-DD') ===
@@ -65,6 +65,7 @@ class LoginController {
           } else {
             userObj.isSign = false
           }
+          userObj.lastSign = signRecord.created
         } else {
           // 用户无签到记录
           userObj.isSign = false
