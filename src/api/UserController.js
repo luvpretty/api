@@ -20,23 +20,29 @@ class UserController {
       // 判断用户上一次签到记录的created时间是否与今天相同
       // 如果相同，代表用户是在连续签到
       // 如果当前时间的日期与用户上一次的签到日期相同，说明用户已经签到
-      if (moment(record.created).format('YYYY-MM-DD') ===
-      moment().format('YYYY-MM-DD')) {
+      const created = moment(record.created).format('YYYY-MM-DD')
+      const now = moment().format('YYYY-MM-DD')
+      console.log('created', created)
+      console.log('now', now)
+      if (created === now) {
         ctx.body = {
           code: 500,
           favs: user.favs,
           count: user.count,
           msg: '用户已经签到'
         }
+        return
       } else {
         // 有上一次的签到记录，并且不与今天相同，进行连续签到的判断
         // 如果相同，代表用户是在连续签到
-        const count = user.count
+        let count = user.count
         let fav = 0
         // 判断签到时间: 用户上一次的签到时间等于当前时间的前一天，说明用户在连续签到
-        if (moment(record.lastSign).format('YYYY-MM-DD') ===
+        // 第n+1天签到的时候，需要与第n天的created比较
+        if (moment(record.created).format('YYYY-MM-DD') ===
         moment().subtract(1, 'days').format('YYYY-MM-DD')) {
           // 连续签到的积分获得
+          count += 1
           if (count < 5) {
             fav = 5
           } else if (count >= 5 && count < 15) {
@@ -64,6 +70,7 @@ class UserController {
           }
         } else {
           // 用户中断了一次签到
+          // 第n+1天签到的时候，需要与第n天的created比较，如果不相等说明中断签到
           fav = 5
           await User.updateOne(
             { _id: obj._id },
@@ -106,7 +113,7 @@ class UserController {
       })
       await newRecord.save()
       result = {
-        favs: 5,
+        favs: user.favs + 5,
         count: 1
       }
     }
@@ -114,10 +121,6 @@ class UserController {
       code: 200,
       msg: '请求成功',
       ...result
-    }
-    ctx.body = {
-      code: 200,
-      msg: '请求成功'
     }
   }
 }
