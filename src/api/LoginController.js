@@ -5,6 +5,7 @@ import jsonwebtoken from 'jsonwebtoken'
 import config from '../config'
 import { checkCode } from '../common/Utils'
 import User from '../model/User'
+import SignRecord from '../model/SignRecord'
 class LoginController {
   async forget (ctx) {
     const { body } = ctx.request
@@ -55,6 +56,19 @@ class LoginController {
         const token = jsonwebtoken.sign({ _id: userObj._id }, config.JWT_SECRET, {
           expiresIn: '1d'
         })
+        // 加入isSign属性
+        const signRecord = await SignRecord.findByUid(userObj._id)
+        if (signRecord !== null) {
+          if (moment(signRecord.created).format('YYYY-MM-DD') ===
+          moment().format('YYYY-MM-DD')) {
+            userObj.isSign = true
+          } else {
+            userObj.isSign = false
+          }
+        } else {
+          // 用户无签到记录
+          userObj.isSign = false
+        }
         ctx.body = {
           code: 200,
           data: userObj,
