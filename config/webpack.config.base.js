@@ -8,25 +8,25 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const webpackconfig = {
   target: 'node',
   entry: {
-    server: path.join(utils.APP_PATH, 'index.js'),
+    server: path.join(utils.APP_PATH, 'index.js')
   },
   alias: {
-    '@': utils.appPath,
+    '@': utils.appPath
   },
   output: {
     filename: '[name].bundle.js',
-    path: utils.DIST_PATH,
+    path: utils.DIST_PATH
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         use: {
-          loader: 'babel-loader',
+          loader: 'babel-loader'
         },
-        exclude: [path.join(__dirname, '/node_modules')],
-      },
-    ],
+        exclude: [path.join(__dirname, '/node_modules')]
+      }
+    ]
   },
   externals: [nodeExcternals()],
   plugins: [
@@ -37,9 +37,9 @@ const webpackconfig = {
           process.env.NODE_ENV === 'production' ||
           process.env.NODE_ENV === 'prod'
             ? "'production'"
-            : "'development'",
-      },
-    }),
+            : "'development'"
+      }
+    })
   ],
   node: {
     console: true,
@@ -49,8 +49,8 @@ const webpackconfig = {
     __filename: true,
     __dirname: true,
     setImmediate: true,
-    path: true,
-  },
+    path: true
+  }
 }
 
 // console.log(webpackconfig)
