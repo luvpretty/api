@@ -150,7 +150,7 @@ class UserController {
       setValue(key, jwt.sign({ _id: obj._id }, config.JWT_SECRET, {
         expiresIn: '30m'
       }))
-      const result = await send({
+      await send({
         type: 'email',
         data: {
           key: key,

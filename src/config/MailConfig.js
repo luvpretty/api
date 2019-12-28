@@ -19,7 +19,7 @@ async function send (sendInfo) {
   })
 
   const baseUrl = config.baseUrl
-  const route = sendInfo.type === 'email' ? '/email' : 'reset'
+  const route = sendInfo.type === 'email' ? '/confirm' : '/reset'
   const url = `${baseUrl}/#${route}?` + qs.stringify(sendInfo.data)
 
   // send mail with defined transport object
