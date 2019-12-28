@@ -10,8 +10,8 @@ const webpackconfig = {
   entry: {
     server: path.join(utils.APP_PATH, 'index.js')
   },
-  alias: {
-    '@': utils.appPath
+  resolve: {
+    ...utils.getWebpackResolveConfig()
   },
   output: {
     filename: '[name].bundle.js',
@@ -35,7 +35,7 @@ const webpackconfig = {
       'process.env': {
         NODE_ENV:
           process.env.NODE_ENV === 'production' ||
-          process.env.NODE_ENV === 'prod'
+            process.env.NODE_ENV === 'prod'
             ? "'production'"
             : "'development'"
       }
