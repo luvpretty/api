@@ -13,11 +13,9 @@ const moduleFiles = require.context('./modules', true, /\.js$/)
 // reduce方法拼接koa-combine-router所需的数据结构Object[]
 const modules = moduleFiles.keys().reduce((items, path) => {
   const value = moduleFiles(path)
-  console.log(value)
   items.push(value.default)
   return items
 }, [])
-console.log(modules)
 export default combineRoutes(
   modules
 //   publicRouter

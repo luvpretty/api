@@ -5,8 +5,10 @@ import {
 import User from '../model/User'
 import moment from 'dayjs'
 import send from '@/config/MailConfig'
-import uuid from 'uuid/v4' 
+import uuid from 'uuid/v4'
 import jwt from 'jsonwebtoken'
+import config from '@/config/index'
+import { setValue } from '../config/RedisConfig'
 class UserController {
   // 用户签到接口
   async userSign (ctx) {
@@ -131,20 +133,21 @@ class UserController {
     const obj = await getJWTPayload(ctx.header.authorization)
     // 判断用户是否修改了邮箱
     const user = await User.findOne({ _id: obj._id })
+    console.log('user: ', user)
     if (body.username && body.username !== user.username) {
       // 用户修改了邮箱，发送reset邮件
       const key = uuid()
       setValue(key, jwt.sign({ _id: obj._id }, config.JWT_SECRET, {
         expiresIn: '10m'
       }))
-      const result = send({
+      const result = await send({
         type: 'email',
-        key: uuid(),
+        key: key,
         code: '',
         expire: moment()
-          .add(30, 'minutes')
+          .add(10, 'minutes')
           .format('YYYY-MM-DD HH:mm:ss'),
-        email: body.username,
+        email: user.username,
         user: user.nickname
       })
       ctx.body = {
@@ -156,7 +159,7 @@ class UserController {
       const arr = ['username', 'mobile', 'password']
       arr.map((item) => { delete body[item] })
       const result = await User.update({ _id: obj._id }, body)
-      if (result.n === 1 && result.ok === ok) {
+      if (result.n === 1 && result.ok === 1) {
         ctx.body = {
           code: 200,
           msg: '更新成功'
