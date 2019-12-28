@@ -8,7 +8,7 @@ import send from '@/config/MailConfig'
 import uuid from 'uuid/v4'
 import jwt from 'jsonwebtoken'
 import config from '@/config/index'
-import { setValue } from '../config/RedisConfig'
+import { setValue, getValue } from '../config/RedisConfig'
 class UserController {
   // 用户签到接口
   async userSign (ctx) {
@@ -133,16 +133,29 @@ class UserController {
     const obj = await getJWTPayload(ctx.header.authorization)
     // 判断用户是否修改了邮箱
     const user = await User.findOne({ _id: obj._id })
+    let msg = ''
     console.log('user: ', user)
     if (body.username && body.username !== user.username) {
       // 用户修改了邮箱，发送reset邮件
+      // 判断用户的新邮箱是否已经有人注册
+      const tmpUser = await User.findOne({ username: body.username })
+      if (tmpUser && tmpUser.password) {
+        ctx.body = {
+          code: 501,
+          msg: '邮箱已经注册'
+        }
+        return
+      }
       const key = uuid()
       setValue(key, jwt.sign({ _id: obj._id }, config.JWT_SECRET, {
-        expiresIn: '10m'
+        expiresIn: '30m'
       }))
       const result = await send({
         type: 'email',
-        key: key,
+        data: {
+          key: key,
+          username: body.username
+        },
         code: '',
         expire: moment()
           .add(10, 'minutes')
@@ -150,25 +163,36 @@ class UserController {
         email: user.username,
         user: user.nickname
       })
+      msg = '更新基本资料成功，账号修改需要邮件确认，请查收邮件！'
+    }
+    const arr = ['username', 'mobile', 'password']
+    arr.map((item) => { delete body[item] })
+    const result = await User.updateOne({ _id: obj._id }, body)
+    if (result.n === 1 && result.ok === 1) {
       ctx.body = {
-        code: 500,
-        data: result,
-        msg: '发送验证邮件成功，请点击链接确认修改邮件账号!'
+        code: 200,
+        msg: msg === '' ? '更新成功' : msg
       }
     } else {
-      const arr = ['username', 'mobile', 'password']
-      arr.map((item) => { delete body[item] })
-      const result = await User.update({ _id: obj._id }, body)
-      if (result.n === 1 && result.ok === 1) {
-        ctx.body = {
-          code: 200,
-          msg: '更新成功'
-        }
-      } else {
-        ctx.body = {
-          code: 500,
-          msg: '更新失败'
-        }
+      ctx.body = {
+        code: 500,
+        msg: '更新失败'
+      }
+    }
+  }
+
+  // 更新用户名接口
+  async updateUsername (ctx) {
+    const body = ctx.query
+    if (body.key) {
+      const token = await getValue(body.key)
+      const obj = getJWTPayload('Bearer ' + token)
+      await User.updateOne({ _id: obj._id }, {
+        username: body.username
+      })
+      ctx.body = {
+        code: 200,
+        msg: '更新用户名成功'
       }
     }
   }

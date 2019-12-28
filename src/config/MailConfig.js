@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import config from '@/config/index'
+import qs from 'qs'
 // async..await is not allowed in global scope, must use a wrapper
 async function send (sendInfo) {
   // Generate test SMTP service account from ethereal.email
@@ -19,7 +20,7 @@ async function send (sendInfo) {
 
   const baseUrl = config.baseUrl
   const route = sendInfo.type === 'email' ? '/email' : 'reset'
-  const url = `${baseUrl}/#${route}?key=${sendInfo.key}`
+  const url = `${baseUrl}/#${route}?` + qs.stringify(sendInfo.data)
 
   // send mail with defined transport object
   const info = await transporter.sendMail({
@@ -36,7 +37,7 @@ async function send (sendInfo) {
         <div style="border: 1px solid #dcdcdc;color: #676767;width: 600px; margin: 0 auto; padding-bottom: 50px;position: relative;">
         <div style="height: 60px; background: #393d49; line-height: 60px; color: #58a36f; font-size: 18px;padding-left: 10px;">全栈爱好者社区</div>
         <div style="padding: 25px">
-          <div>您好，${sendInfo.user}童鞋，重置链接有效时间10分钟，请在${
+          <div>您好，${sendInfo.user}童鞋，重置链接有效时间30分钟，请在${
       sendInfo.expire
     }之前重置您的密码：</div>
           <a href="${url}" style="padding: 10px 20px; color: #fff; background: #009e94; display: inline-block;margin: 15px 0;">立即重置密码</a>
