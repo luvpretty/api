@@ -1,6 +1,6 @@
 import Router from 'koa-router'
-import publicController from '../api/PublicController'
-import ContentControler from '../api/ContentController'
+import publicController from '@/api/PublicController'
+import ContentControler from '@/api/ContentController'
 const router = new Router()
 
 router.prefix('/public')
