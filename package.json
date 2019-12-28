@@ -21,6 +21,7 @@
     "bcrypt": "^3.0.7",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.7.2",
+    "dayjs": "^1.8.18",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
