@@ -16,8 +16,10 @@ async function send (sendInfo) {
       pass: 'vxmayfmguugvbcef' // generated ethereal password
     }
   })
-
-  const url = 'http://49.234.66.66:3333'
+  
+  const baseUrl = config.baseUrl
+  const route = sendInfo.type === 'email' ? '/email': 'reset'
+  const url = `${baseUrl}/#${route}?key=${sendInfo.key}`
 
   // send mail with defined transport object
   const info = await transporter.sendMail({

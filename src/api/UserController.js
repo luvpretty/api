@@ -4,6 +4,9 @@ import {
 } from '../common/Utils'
 import User from '../model/User'
 import moment from 'dayjs'
+import send from '@/config/MailConfig'
+import uuid from 'uuid/v4' 
+import jwt from 'jsonwebtoken'
 class UserController {
   // 用户签到接口
   async userSign (ctx) {
@@ -119,6 +122,51 @@ class UserController {
       msg: '请求成功',
       ...result,
       lastSign: newRecord.created
+    }
+  }
+
+  // 更新用户基本信息接口
+  async updateUserInfo (ctx) {
+    const { body } = ctx.request
+    const obj = await getJWTPayload(ctx.header.authorization)
+    // 判断用户是否修改了邮箱
+    const user = await User.findOne({ _id: obj._id })
+    if (body.username && body.username !== user.username) {
+      // 用户修改了邮箱，发送reset邮件
+      const key = uuid()
+      setValue(key, jwt.sign({ _id: obj._id }, config.JWT_SECRET, {
+        expiresIn: '10m'
+      }))
+      const result = send({
+        type: 'email',
+        key: uuid(),
+        code: '',
+        expire: moment()
+          .add(30, 'minutes')
+          .format('YYYY-MM-DD HH:mm:ss'),
+        email: body.username,
+        user: user.nickname
+      })
+      ctx.body = {
+        code: 500,
+        data: result,
+        msg: '发送验证邮件成功，请点击链接确认修改邮件账号!'
+      }
+    } else {
+      const arr = ['username', 'mobile', 'password']
+      arr.map((item) => { delete body[item] })
+      const result = await User.update({ _id: obj._id }, body)
+      if (result.n === 1 && result.ok === ok) {
+        ctx.body = {
+          code: 200,
+          msg: '更新成功'
+        }
+      } else {
+        ctx.body = {
+          code: 500,
+          msg: '更新失败'
+        }
+      }
     }
   }
 }
