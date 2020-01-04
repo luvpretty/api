@@ -4,6 +4,8 @@ import fs from 'fs'
 import uuid from 'uuid/v4'
 import moment from 'dayjs'
 import config from '@/config'
+improt mkdir from 'make-dir'
+// import { dirExists } from '@/common/Utils'
 class ContentController {
   // 获取列表信息
   async getPostList (ctx) {
@@ -72,6 +74,9 @@ class ContentController {
     const dir = `${config.uploadPath}/${moment().format('YYYYMMDD')}`
     console.log('dir: ', dir)
     // 判断路径是否存在，不存在则创建
+    await mkdir(dir)
+    // 存储文件到指定的路径
+    // 给文件一个唯一的名称
   }
 }
 export default new ContentController()
