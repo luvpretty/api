@@ -3,8 +3,8 @@ import Links from '../model/Links'
 import fs from 'fs'
 import uuid from 'uuid/v4'
 import moment from 'dayjs'
-import config from '@/config'
-improt mkdir from 'make-dir'
+import config from '@/config/index'
+import mkdir from 'make-dir'
 // import { dirExists } from '@/common/Utils'
 class ContentController {
   // 获取列表信息
@@ -66,17 +66,32 @@ class ContentController {
 
   // 上传图片
   async uploadImg (ctx) {
+    // 读取图片文件内容
     const file = ctx.request.files.file
-    console.log('file: ', file)
-    // 图片名称、图片格式、存储位置，返回前台可以读取的路径
+    // 图片格式
     const ext = file.name.split('.').pop()
     console.log('ext: ', ext)
+    // 图片路径
     const dir = `${config.uploadPath}/${moment().format('YYYYMMDD')}`
-    console.log('dir: ', dir)
+    console.log('dir哈哈哈: ', dir)
     // 判断路径是否存在，不存在则创建
     await mkdir(dir)
-    // 存储文件到指定的路径
     // 给文件一个唯一的名称
+    const picname = uuid()
+    // 存储文件到指定的路径
+    const destPath = `${dir}/${picname}.${ext}`
+    console.log(destPath)
+    // 读文件流
+    const reader = fs.createReadStream(file.path)
+    // 写文件流
+    const upStream = fs.createWriteStream(destPath)
+    const filePath = `/${moment().format('YYYYMMDD')}/${picname}.${ext}`
+    reader.pipe(upStream)
+    ctx.body = {
+      code: 200,
+      mag: '图片上传成功',
+      data: filePath
+    }
   }
 }
 export default new ContentController()
