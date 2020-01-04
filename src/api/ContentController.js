@@ -1,6 +1,11 @@
 import Post from '../model/Post'
 import Links from '../model/Links'
+import fs from 'fs'
+import uuid from 'uuid/v4'
+import moment from 'dayjs'
+import config from '@/config'
 class ContentController {
+  // 获取列表信息
   async getPostList (ctx) {
     const body = ctx.query
     const sort = body.sort ? body.sort : 'created'
@@ -55,6 +60,18 @@ class ContentController {
       code: 200,
       data: result
     }
+  }
+
+  // 上传图片
+  async uploadImg (ctx) {
+    const file = ctx.request.files.file
+    console.log('file: ', file)
+    // 图片名称、图片格式、存储位置，返回前台可以读取的路径
+    const ext = file.name.split('.').pop()
+    console.log('ext: ', ext)
+    const dir = `${config.uploadPath}/${moment().format('YYYYMMDD')}`
+    console.log('dir: ', dir)
+    // 判断路径是否存在，不存在则创建
   }
 }
 export default new ContentController()
