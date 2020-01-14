@@ -9,7 +9,6 @@ import SignRecord from '../model/SignRecord'
 class LoginController {
   async forget (ctx) {
     const { body } = ctx.request
-    console.log(body)
     try {
       // body.username -> database -> email
       const result = await send({

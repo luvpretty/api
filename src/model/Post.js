@@ -9,13 +9,18 @@ const PostSchema = new Schema({
   created: { type: Date },
   catalog: { type: String },
   fav: { type: String },
-  isEnd: { type: String },
-  reads: { type: Number },
-  answer: { type: Number },
-  status: { type: String },
-  isTop: { type: String },
-  sort: { type: String },
-  tags: { type: Array }
+  isEnd: { type: String, default: '0' },
+  reads: { type: Number, default: 0 },
+  answer: { type: Number, default: 0 },
+  status: { type: String, default: '0' },
+  isTop: { type: String, default: '0' },
+  sort: { type: String, default: 100 },
+  tags: {
+    type: Array,
+    default: [
+      // { name: '', class: '' }
+    ]
+  }
 })
 // 保存时候创建时间格式化
 PostSchema.pre('save', function (next) {
