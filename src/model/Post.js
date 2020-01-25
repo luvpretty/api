@@ -1,5 +1,5 @@
 import mongoose from '../config/DBHelpler'
-import moment from 'moment'
+import moment from 'dayjs'
 const Schema = mongoose.Schema
 
 const PostSchema = new Schema({
@@ -58,6 +58,12 @@ PostSchema.statics = {
       title: 1
     }).sort({ answer: -1 })
       .limit(10)
+  },
+  findByTid: function (id) {
+    return this.findOne({ _id: id }).populate({
+      path: 'uid',
+      select: 'nickname pic isVip _id'
+    })
   }
 }
 
