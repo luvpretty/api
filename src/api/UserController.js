@@ -1,8 +1,7 @@
 import SignRecord from '../model/SignRecord'
-import {
-  getJWTPayload
-} from '../common/Utils'
+import { getJWTPayload } from '../common/Utils'
 import User from '../model/User'
+import UserCollect from '../model/UserCollect'
 import moment from 'dayjs'
 import send from '@/config/MailConfig'
 import uuid from 'uuid/v4'
@@ -218,6 +217,34 @@ class UserController {
       ctx.body = {
         code: 500,
         msg: '更新密码错误，请检查!'
+      }
+    }
+  }
+
+  // 设置收藏
+  async setCollect (ctx) {
+    const params = ctx.query
+    const obj = await getJWTPayload(ctx.header.authorization)
+    if (parseInt(params.isFav)) {
+      // 说明用户已经收藏帖子
+      await UserCollect.deleteOne({ uid: obj._id, tid: params.tid })
+      ctx.body = {
+        code: 200,
+        msg: '取消收藏成功'
+      }
+    } else {
+      const newCollect = new UserCollect({
+        uid: obj._id,
+        tid: params.tid,
+        title: params.title
+      })
+      const result = await newCollect.save()
+      if (result.uid) {
+        ctx.body = {
+          code: 200,
+          data: result,
+          msg: '收藏成功'
+        }
       }
     }
   }
