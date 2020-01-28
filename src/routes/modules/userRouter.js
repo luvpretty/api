@@ -1,22 +1,30 @@
 import Router from 'koa-router'
-import UserController from '@/api/UserController'
+import userController from '../../api/UserController'
+import contentController from '@/api/ContentController'
 
 const router = new Router()
 
 router.prefix('/user')
 
 // 用户签到
-router.get('/fav', UserController.userSign)
+router.get('/fav', userController.userSign)
 
-// 更新用户基本信息
-router.post('/basic', UserController.updateUserInfo)
+// 更新用户的基本信息
+router.post('/basic', userController.updateUserInfo)
 
 // 修改密码
-router.post('/change-password', UserController.changePasswd)
+router.post('/change-password', userController.changePasswd)
 
-// 取消 & 设置收藏
-router.get('/set-collect', UserController.setCollect)
+// 取消 设置收藏
+router.get('/set-collect', userController.setCollect)
 
 // 获取收藏列表
+router.get('/collect', userController.getCollectByUid)
+
+// 获取用户发贴记录
+router.get('/post', contentController.getPostByUid)
+
+// 删除发贴记录
+router.get('/delete-post', contentController.deletePostByUid)
 
 export default router
