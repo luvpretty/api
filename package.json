@@ -18,7 +18,6 @@
   "license": "ISC",
   "dependencies": {
     "@koa/cors": "^3.0.0",
-    "bcrypt": "^3.0.7",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.7.2",
     "dayjs": "^1.8.18",
@@ -39,6 +38,7 @@
     "redis": "^2.8.0",
     "saslprep": "^1.0.3",
     "svg-captcha": "^1.4.0",
+    "thunk-redis": "^2.2.4",
     "uuid": "^3.3.3"
   },
   "devDependencies": {

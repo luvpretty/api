@@ -5,6 +5,7 @@ const Schema = mongoose.Schema
 
 const CommentsSchema = new Schema({
   tid: { type: String, ref: 'post' },
+  uid: { type: String, ref: 'users' },
   cuid: { type: String, ref: 'users' },
   content: { type: String },
   created: { type: Date },
@@ -37,7 +38,7 @@ CommentsSchema.statics = {
   getCommentsList: function (id, page, limit) {
     return this.find({ tid: id }).populate({
       path: 'cuid',
-      select: '_id nickname pic isVip',
+      select: '_id name pic isVip',
       match: { status: { $eq: '0' } }
     }).populate({
       path: 'tid',
@@ -56,6 +57,32 @@ CommentsSchema.statics = {
       .skip(page * limit)
       .limit(limit)
       .sort({ created: -1 })
+  },
+  getMsgList: function (id, page, limit) {
+    return this.find({
+      uid: id,
+      cuid: { $ne: id },
+      isRead: { $eq: '0' },
+      status: { $eq: '1' }
+    })
+      .populate({
+        path: 'tid',
+        select: '_id title'
+      })
+      .populate({
+        path: 'uid',
+        select: '_id name'
+      })
+      .populate({
+        path: 'cuid',
+        select: '_id name'
+      })
+      .skip(limit * page)
+      .limit(limit)
+      .sort({ created: -1 })
+  },
+  getTotal: function (id) {
+    return this.find({ uid: id, isRead: '0', status: '1' }).countDocuments()
   }
 }
 

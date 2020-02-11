@@ -97,8 +97,11 @@ class CommentsController {
     const newComment = new Comments(body)
     const obj = await getJWTPayload(ctx.header.authorization)
     newComment.cuid = obj._id
+    // 查询帖子的作者，以便发送消息
+    const post = await Post.findOne({ _id: body.tid })
+    newComment.uid = post.uid
     const comment = await newComment.save()
-    // 评论记数
+    // 评论计数
     const updatePostresult = await Post.updateOne({ _id: body.tid }, { $inc: { answer: 1 } })
     if (comment._id && updatePostresult.ok === 1) {
       ctx.body = {

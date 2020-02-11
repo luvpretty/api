@@ -30,6 +30,9 @@ const options = {
 // const client = redis.createClient(options)
 const client = promisifyAll(redis.createClient(options))
 
+client.on('connect', () => {
+  console.log('Redis Client connect')
+})
 client.on('error', (err) => {
   console.log('Redis Client Error:' + err)
 })

@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken'
 import config from '@/config/index'
 import { setValue, getValue } from '../config/RedisConfig'
 import bcrypt from 'bcryptjs'
+import Comments from '../model/Comments'
 class UserController {
   // 用户签到接口
   async userSign (ctx) {
@@ -285,8 +286,22 @@ class UserController {
     }
   }
 
-  // 获取用户最近的评论记录
-  async getCommentPublic (ctx) { }
+  // 获取历史消息
+  // 记录评论之后，给作者发送消息
+  async getMsg (ctx) {
+    const params = ctx.query
+    const page = params.page ? params.page : 0
+    const limit = params.limit ? parseInt(params.limit) : 0
+    // 方法一： 嵌套查询 -> aggregate
+    // 方法二： 通过冗余换时间
+    const obj = await getJWTPayload(ctx.header.authorization)
+    const result = await Comments.getMsgList(obj._id, page, limit)
+    console.log(result, obj)
+    ctx.body = {
+      code: 200,
+      data: result
+    }
+  }
 }
 
 export default new UserController()

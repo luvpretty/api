@@ -114,7 +114,6 @@ class LoginController {
         check = false
       }
       // 写入数据到数据库
-      check = true
       if (check) {
         body.password = await bcrypt.hash(body.password, 5)
         const user = new User({
@@ -124,7 +123,6 @@ class LoginController {
           created: moment().format('YYYY-MM-DD HH:mm:ss')
         })
         const result = await user.save()
-        console.log(result)
         ctx.body = {
           code: 200,
           data: result,
