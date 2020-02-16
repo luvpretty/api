@@ -17,6 +17,7 @@ const app = new Koa()
 
 const ws = new WebSocketServer()
 ws.init()
+global.ws = ws
 
 const isDevMode = process.env.NODE_ENV !== 'production'
 

@@ -71,11 +71,11 @@ CommentsSchema.statics = {
       })
       .populate({
         path: 'uid',
-        select: '_id name'
+        select: '_id nickname'
       })
       .populate({
         path: 'cuid',
-        select: '_id name'
+        select: '_id nickname'
       })
       .skip(limit * page)
       .limit(limit)

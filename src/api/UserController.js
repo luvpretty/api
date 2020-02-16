@@ -292,14 +292,37 @@ class UserController {
     const params = ctx.query
     const page = params.page ? params.page : 0
     const limit = params.limit ? parseInt(params.limit) : 0
-    // 方法一： 嵌套查询 -> aggregate
-    // 方法二： 通过冗余换时间
     const obj = await getJWTPayload(ctx.header.authorization)
+    const num = await Comments.getTotal(obj._id)
     const result = await Comments.getMsgList(obj._id, page, limit)
-    console.log(result, obj)
     ctx.body = {
       code: 200,
-      data: result
+      data: result,
+      total: num
+    }
+  }
+
+  // 设置已读消息
+  async setMsg (ctx) {
+    const params = ctx.query
+    console.log(params)
+    if (params.id) {
+      // 设置特定用户为已读
+      const result = await Comments.updateOne({ _id: params.id }, { isRead: '1' })
+      if (result.ok === 1) {
+        ctx.body = {
+          code: 200
+        }
+      }
+    } else {
+      // 设置所有用户为已读
+      const obj = await getJWTPayload(ctx.header.authorization)
+      const result = await Comments.updateMany({ uid: obj._id }, { isRead: '1' })
+      if (result.ok === 1) {
+        ctx.body = {
+          code: 200
+        }
+      }
     }
   }
 }
